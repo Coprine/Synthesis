@@ -1,0 +1,96 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
+struct DreamObj
+{
+    char name[12],
+    char mainTrait[12],
+    int organic,
+    int artificial,
+    int abstract,
+    int transmuteTolerant,
+    int inspectTolerant,
+    int seedTolerant
+}
+
+
+// List of names for objects of each tendency
+char organicNames[7][12] = ["Dirt", "Worm", "Fly", "Tree", "Mouse", "Rat", "Wolf"];
+char artificialNames[7][12] = ["Rock", "Plate", "Shelf", "Chair", "Lamp", "Book", "Clock"];
+char abstractNames[7][12] = ["Painting", "Television", "Mirror", "Severed Limb", "Symbols", "Light", "Shadow"];
+
+
+// Sets name and determines main trait of object
+void typeCalibrate(struct DreamObj obj)
+{
+
+    if(obj.organic > obj.artificial && obj.organic > obj.abstract)
+    {
+        retObj.mainTrait = "organic";
+        retObj.name = organicNames[obj.organic];
+    } else if(obj.artificial > obj.organic && obj.artificial > obj.abstract)
+    {
+        retObj.mainTrait = "artificial";
+        retObj.name = artificialNames[obj.artificial];
+    } else if(obj.abstract > obj.artificial && obj.abstract > obj.organic)
+    {
+        retObj.mainTrait = "abstract";
+        retObj.name = abstractNames[obj.abstract];
+    } else if(obj.organic == obj.artificial || obj.organic == obj.abstract)
+    {
+        retObj.mainTrait = "organic";
+        retObj.name = organicNames[obj.organic];
+    } else if(obj.artificial == obj.abstract)
+    {
+        retObj.mainTrait = "artificial";
+        retObj.name = artificialNames[obj.artificial];
+    }
+}
+
+
+// Creates a new random object
+struct DreamObj createObject()
+{
+    // Object to be returned
+    struct DreamObj retObj = {};
+
+    // Sets tendency traits for new object
+    newOrg = rand(6);
+    newArt = rand(6);
+    newAbs = rand(6);
+
+    // TODO: set tolerances, create interfacing, create functions for: transmutate, synthesize, inspect, and seed (may be renamed to "liken")
+
+    // Notes: avstract object shsould be obstacles, however they are the only ones which can be synthesized. Transmuting an abstract object has a high chance of scrambling other objects. Abstraction is rare but hard to reverse. When all objects are abstract, the player loses. Objects with more extreme tendencies are harder to transmute to different tendencies. If all objects are of the same tendency and are not abstract, the player may move on. Difficulty may be modified by making transmuting more risky. Each level should be a "world", which has "rules", perhaps its own tendencies of some sort. Liken makes other objects more like the likened object at the risk of the likened object drasticallyt changing. Identifying will vaguely describe and object's tendencies (strongly organic, weakly artificial, moderately abstract). Different items will have difference tolerances which may disallow certain functions on them.
+
+
+
+    // Sets name and determines main trait of object
+    typeCalibrate(retObj);
+    // Returns struct
+    return retObj;
+}
+
+
+int main()
+{
+    // Initialize random number generator
+    srand(time(NULL));
+    // Array containing the objects for each stage
+    struct DreamObj[5] objectArray;
+
+    while(1)
+    {
+        // Populate the main array with functional dream objects
+        for(int i = 0; i<5; i++)
+        {
+            objectArray[i] = createObject();
+        }
+
+        scanf("Thank you for playing, press enter to play again.")
+    }
+
+
+    return 0
+}
