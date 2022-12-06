@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 struct DreamObj
 {
@@ -32,29 +33,29 @@ void typeCalibrate(int index)
     if(objectArray[index].organic > objectArray[index].artificial && objectArray[index].organic > objectArray[index].abstract)
     {
         objectArray[index].mainTrait = *"organic";
-        objectArray[index].name = organicNames[objectArray[index].organic];
+        strcpy(objectArray[index].name, organicNames[objectArray[index].organic]);
     } else if(objectArray[index].artificial > objectArray[index].organic && objectArray[index].artificial > objectArray[index].abstract)
     {
         objectArray[index].mainTrait = *"artificial";
-        objectArray[index].name = artificialNames[objectArray[index].artificial];
+        strcpy(objectArray[index].name, artificialNames[objectArray[index].artificial]);
     } else if(objectArray[index].abstract > objectArray[index].artificial && objectArray[index].abstract > objectArray[index].organic)
     {
         objectArray[index].mainTrait = *"abstract";
-        objectArray[index].name = abstractNames[objectArray[index].abstract];
+        strcpy(objectArray[index].name, abstractNames[objectArray[index].abstract]);
     } else if(objectArray[index].organic == objectArray[index].artificial || objectArray[index].organic == objectArray[index].abstract)
     {
         objectArray[index].mainTrait = *"organic";
-        objectArray[index].name = organicNames[objectArray[index].organic];
+        strcpy(objectArray[index].name, organicNames[objectArray[index].organic]);
     } else if(objectArray[index].artificial == objectArray[index].abstract)
     {
         objectArray[index].mainTrait = *"artificial";
-        objectArray[index].name = artificialNames[obj.artificial];
+        strcpy(objectArray[index].name, artificialNames[objectArray[index].artificial]);
     }
 }
 
 
 // Creates a new random object
-struct DreamObj createObject()
+struct DreamObj createObject(int index)
 {
     // Object to be returned
     struct DreamObj retObj;
@@ -64,14 +65,19 @@ struct DreamObj createObject()
     int newArt = rand()%7;
     int newAbs = rand()%7;
 
+    retObj.organic = newOrg;
+    retObj.artificial = newArt;
+    retObj.abstract = newAbs;
+
+    
     // TODO: set tolerances, create interfacing, create functions for: transmutate, synthesize, inspect, and seed (may be renamed to "liken")
 
-    // Notes: avstract object shsould be obstacles, however they are the only ones which can be synthesized. Transmuting an abstract object has a high chance of scrambling other objects. Abstraction is rare but hard to reverse. When all objects are abstract, the player loses. Objects with more extreme tendencies are harder to transmute to different tendencies. If all objects are of the same tendency and are not abstract, the player may move on. Difficulty may be modified by making transmuting more risky. Each level should be a "world", which has "rules", perhaps its own tendencies of some sort. Liken makes other objects more like the likened object at the risk of the likened object drasticallyt changing. Identifying will vaguely describe and object's tendencies (strongly organic, weakly artificial, moderately abstract). Different items will have difference tolerances which may disallow certain functions on them.
+    // Notes: avstract object shsould be obstacles, however they are the only ones which can be synthesized. Transmuting an abstract object has a high chance of scrambling other objects. Abstraction is rare but hard to reverse. When all objects are abstract, the player loses. Objects with more extreme tendencies are harder to transmute to different tendencies. If all objects are of the same tendency and are not abstract, the player may move on. Difficulty may be modified by making transmuting more risky. Each level should be a "world", which has "rules", perhaps its own tendencies of some sort. Liken makes other objects more like the likened object at the risk of the likened object drastically changing. Identifying will vaguely describe and object's tendencies (strongly organic, weakly artificial, moderately abstract). Different items will have difference tolerances which may disallow certain functions on them.
 
 
 
     // Sets name and determines main trait of object
-    typeCalibrate(retObj);
+    typeCalibrate(index);
     // Returns struct
     return retObj;
 }
@@ -87,8 +93,8 @@ int main()
         // Populate the main array with functional dream objects
         for(int i = 0; i<5; i++)
         {
-            objectArray[i] = createObject();
-            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\n", i, objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract);
+            objectArray[i] = createObject(i);
+            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract);
         }
 
         scanf("Thank you for playing! Press enter to play again.");
