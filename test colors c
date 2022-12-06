@@ -4,47 +4,51 @@
 
 struct DreamObj
 {
-    char name[12],
-    char mainTrait[12],
-    int organic,
-    int artificial,
-    int abstract,
-    int transmuteTolerant,
-    int inspectTolerant,
-    int seedTolerant
-}
+    char name[12];
+    char mainTrait;
+    int organic;
+    int artificial;
+    int abstract;
+    int transmuteTolerant;
+    int inspectTolerant;
+    int seedTolerant;
+};
+
+    // Array containing the objects for each stage
+    struct DreamObj objectArray[5];
+
 
 
 // List of names for objects of each tendency
-char organicNames[7][12] = ["Dirt", "Worm", "Fly", "Tree", "Mouse", "Rat", "Wolf"];
-char artificialNames[7][12] = ["Rock", "Plate", "Shelf", "Chair", "Lamp", "Book", "Clock"];
-char abstractNames[7][12] = ["Painting", "Television", "Mirror", "Severed Limb", "Symbols", "Light", "Shadow"];
+char organicNames[7][12] = {"ERROR 1", "Worm", "Fly", "Tree", "Mouse", "Rat", "Wolf"};
+char artificialNames[7][12] = {"Plate", "Table", "Shelf", "Chair", "Lamp", "Book", "Clock"};
+char abstractNames[7][12] = {"ERROR 2", "Painting", "Television", "Mirror", "Symbols", "Light", "Shadow"};
 
 
 // Sets name and determines main trait of object
-void typeCalibrate(struct DreamObj obj)
+void typeCalibrate(int index)
 {
 
-    if(obj.organic > obj.artificial && obj.organic > obj.abstract)
+    if(objectArray[index].organic > objectArray[index].artificial && objectArray[index].organic > objectArray[index].abstract)
     {
-        retObj.mainTrait = "organic";
-        retObj.name = organicNames[obj.organic];
-    } else if(obj.artificial > obj.organic && obj.artificial > obj.abstract)
+        objectArray[index].mainTrait = *"organic";
+        objectArray[index].name = organicNames[objectArray[index].organic];
+    } else if(objectArray[index].artificial > objectArray[index].organic && objectArray[index].artificial > objectArray[index].abstract)
     {
-        retObj.mainTrait = "artificial";
-        retObj.name = artificialNames[obj.artificial];
-    } else if(obj.abstract > obj.artificial && obj.abstract > obj.organic)
+        objectArray[index].mainTrait = *"artificial";
+        objectArray[index].name = artificialNames[objectArray[index].artificial];
+    } else if(objectArray[index].abstract > objectArray[index].artificial && objectArray[index].abstract > objectArray[index].organic)
     {
-        retObj.mainTrait = "abstract";
-        retObj.name = abstractNames[obj.abstract];
-    } else if(obj.organic == obj.artificial || obj.organic == obj.abstract)
+        objectArray[index].mainTrait = *"abstract";
+        objectArray[index].name = abstractNames[objectArray[index].abstract];
+    } else if(objectArray[index].organic == objectArray[index].artificial || objectArray[index].organic == objectArray[index].abstract)
     {
-        retObj.mainTrait = "organic";
-        retObj.name = organicNames[obj.organic];
-    } else if(obj.artificial == obj.abstract)
+        objectArray[index].mainTrait = *"organic";
+        objectArray[index].name = organicNames[objectArray[index].organic];
+    } else if(objectArray[index].artificial == objectArray[index].abstract)
     {
-        retObj.mainTrait = "artificial";
-        retObj.name = artificialNames[obj.artificial];
+        objectArray[index].mainTrait = *"artificial";
+        objectArray[index].name = artificialNames[obj.artificial];
     }
 }
 
@@ -53,12 +57,12 @@ void typeCalibrate(struct DreamObj obj)
 struct DreamObj createObject()
 {
     // Object to be returned
-    struct DreamObj retObj = {};
+    struct DreamObj retObj;
 
     // Sets tendency traits for new object
-    newOrg = rand(6);
-    newArt = rand(6);
-    newAbs = rand(6);
+    int newOrg = rand()%7;
+    int newArt = rand()%7;
+    int newAbs = rand()%7;
 
     // TODO: set tolerances, create interfacing, create functions for: transmutate, synthesize, inspect, and seed (may be renamed to "liken")
 
@@ -77,8 +81,6 @@ int main()
 {
     // Initialize random number generator
     srand(time(NULL));
-    // Array containing the objects for each stage
-    struct DreamObj[5] objectArray;
 
     while(1)
     {
@@ -86,11 +88,12 @@ int main()
         for(int i = 0; i<5; i++)
         {
             objectArray[i] = createObject();
+            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\n", i, objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract);
         }
 
-        scanf("Thank you for playing, press enter to play again.")
+        scanf("Thank you for playing! Press enter to play again.");
     }
 
 
-    return 0
+    return 0;
 }
