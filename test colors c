@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 struct DreamObj
 {
@@ -55,6 +56,35 @@ void typeCalibrate(int index)
     }
 }
 
+//Calculates an object's tolerances to various actions
+void toleranceCalc(int index)
+{
+  // Will be linked to world later on
+  double globalTTolerantMod = 1;
+  double globalITolerantMod = 1;
+  double globalSTolerantMod = 1;
+
+
+  int organic = objectArray[index].organic;
+  int artificial = objectArray[index].artificial;
+  int abstract = objectArray[index].abstract;
+
+  // Sets variable to be transmute tolerance
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in organic, minus 16.6 percent for each point the object has in artificial. It is then modified by the world's transmute tolerance modifier.
+  double transmuteTolerantMod = ((rand()%50)*0.01+((double)organic/6)-((double)artificial/12))*globalTTolerantMod;
+  objectArray[index].transmuteTolerant = floor(transmuteTolerantMod * 100);
+
+  // Sets variable to be inspect tolerance
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in artificial, minus 16.6 percent for each point the object has in abstract. It is then modified by the world's inspect tolerance modifier.
+  double inspectTolerantMod = ((rand()%50)*0.01+((double)artificial/6)-((double)abstract/12))*globalITolerantMod;
+  objectArray[index].inspectTolerant = floor(inspectTolerantMod * 100);
+
+  // Sets variable to be seed tolerance
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in abstract, minus 16.6 percent for each point the object has in organic. It is then modified by the world's seed tolerance modifier.
+  double seedTolerantMod = ((rand()%50)*0.01+((double)abstract/6)-((double)organic/12))*globalSTolerantMod;
+  objectArray[index].seedTolerant = floor(seedTolerantMod * 100);
+}
+
 
 // Creates a new random object
 void createObject(int index)
@@ -78,6 +108,8 @@ void createObject(int index)
 
     // Sets name and determines main trait of object
     typeCalibrate(index);
+    // Sets object's tolerances
+    toleranceCalc(index);
 }
 
 // Main function
@@ -94,7 +126,7 @@ int main()
             // Calls function to construct relevant DreamObj
             createObject(i);
             // DEBUG TEXT
-            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract);
+            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\nTransmute Tolerance: %d%%\nInspect Tolerance: %d%%\nSeed Tolerance: %d%%\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract, objectArray[i].transmuteTolerant, objectArray[i].inspectTolerant, objectArray[i].seedTolerant);
             // END DEBUG TEXT
         }
 
