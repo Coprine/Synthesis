@@ -22,9 +22,14 @@ struct DreamObj
 
 
 // List of names for objects of each tendency
-char organicNames[7][12] = {"ERROR 1", "Worm", "Fly", "Tree", "Mouse", "Rat", "Wolf"};
+char organicNames[7][12] = {"ERROR 1", "Worm", "Fly", "Mouse", "Cat", "Wolf", "Tree"};
 char artificialNames[7][12] = {"Plate", "Table", "Shelf", "Chair", "Lamp", "Book", "Clock"};
 char abstractNames[7][12] = {"ERROR 2", "Painting", "Television", "Mirror", "Symbol", "Light", "Shadow"};
+
+
+
+/////////////////////////////// START OBJECT CREATION FUNCTIONS //////////////////////////////
+
 
 
 // Sets name and determines main trait of object
@@ -34,26 +39,26 @@ void typeCalibrate(int index)
     // Checks for if the object's organic score is the highest
     if(objectArray[index].organic >= objectArray[index].artificial && objectArray[index].organic >= objectArray[index].abstract)
     {
-        // Object's trait set to organic
-        objectArray[index].mainTrait = *"o";
-        // Object's name set to its corresponding manifestation
-        strcpy(objectArray[index].name, organicNames[objectArray[index].organic]);
-
+      // Object's trait set to organic
+      objectArray[index].mainTrait = *"o";
+      // Object's name set to its corresponding manifestation
+      strcpy(objectArray[index].name, organicNames[objectArray[index].organic]);
+      return;
       // Checks if the object's artificial score is the highest
-    } else if(objectArray[index].artificial > objectArray[index].organic && objectArray[index].artificial >= objectArray[index].abstract)
+    } 
+    if(objectArray[index].artificial > objectArray[index].organic && objectArray[index].artificial >= objectArray[index].abstract)
     {
-        // Object's trait set to artificial
-        objectArray[index].mainTrait = *"r";
-        // Object's name set to its corresponding manifestation
-        strcpy(objectArray[index].name, artificialNames[objectArray[index].artificial]);
-
-      // CHecks if the object's abstract trait is the highest 
-    } else {
-        // Object's trait set to abstract
-        objectArray[index].mainTrait = *"a";
-        // Object's name set to its corresponding manifestation
-        strcpy(objectArray[index].name, abstractNames[objectArray[index].abstract]);
-    }
+      // Object's trait set to artificial
+      objectArray[index].mainTrait = *"r";
+      // Object's name set to its corresponding manifestation
+      strcpy(objectArray[index].name, artificialNames[objectArray[index].artificial]);
+      return; 
+    } 
+    // Checks if the object's abstract trait is the highest
+    // Object's trait set to abstract
+    objectArray[index].mainTrait = *"a";
+    // Object's name set to its corresponding manifestation
+    strcpy(objectArray[index].name, abstractNames[objectArray[index].abstract]);
 }
 
 //Calculates an object's tolerances to various actions
@@ -70,18 +75,30 @@ void toleranceCalc(int index)
   int abstract = objectArray[index].abstract;
 
   // Sets variable to be transmute tolerance
-  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in organic, minus 16.6 percent for each point the object has in artificial. It is then modified by the world's transmute tolerance modifier.
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in organic, minus 8.3 percent for each point the object has in artificial. It is then modified by the world's transmute tolerance modifier.
   double transmuteTolerantMod = ((rand()%50)*0.01+((double)organic/6)-((double)artificial/12))*globalTTolerantMod;
+  if(transmuteTolerantMod<0)
+  {transmuteTolerantMod = 0;}
+  if(transmuteTolerantMod>1)
+  {transmuteTolerantMod = 1;}
   objectArray[index].transmuteTolerant = floor(transmuteTolerantMod * 100);
 
   // Sets variable to be inspect tolerance
-  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in artificial, minus 16.6 percent for each point the object has in abstract. It is then modified by the world's inspect tolerance modifier.
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in artificial, minus 8.3 percent for each point the object has in abstract. It is then modified by the world's inspect tolerance modifier.
   double inspectTolerantMod = ((rand()%50)*0.01+((double)artificial/6)-((double)abstract/12))*globalITolerantMod;
+  if(inspectTolerantMod<0)
+  {inspectTolerantMod = 0;}
+  if(inspectTolerantMod>1)
+  {inspectTolerantMod = 1;}
   objectArray[index].inspectTolerant = floor(inspectTolerantMod * 100);
 
   // Sets variable to be seed tolerance
-  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in abstract, minus 16.6 percent for each point the object has in organic. It is then modified by the world's seed tolerance modifier.
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in abstract, minus 8.3 percent for each point the object has in organic. It is then modified by the world's seed tolerance modifier.
   double seedTolerantMod = ((rand()%50)*0.01+((double)abstract/6)-((double)organic/12))*globalSTolerantMod;
+  if(seedTolerantMod<0)
+  {seedTolerantMod = 0;}
+  if(seedTolerantMod>1)
+  {seedTolerantMod = 1;}
   objectArray[index].seedTolerant = floor(seedTolerantMod * 100);
 }
 
@@ -99,18 +116,113 @@ void createObject(int index)
     objectArray[index].artificial = newArt;
     objectArray[index].abstract = newAbs;
 
-    
-    // TODO: set tolerances, create interfacing, create functions for: transmutate, synthesize, inspect, and seed (may be renamed to "liken")
-
-    // Notes: abstract objects should be obstacles, however they are the only ones which can be synthesized. Transmuting an abstract object has a high chance of scrambling other objects. Abstraction is rare but hard to reverse. When all objects are abstract, the player loses. Objects with more extreme tendencies are harder to transmute to different tendencies. If all objects are of the same tendency and are not abstract, the player may move on. Difficulty may be modified by making transmuting more risky. Each level should be a "world", which has "rules", perhaps its own tendencies of some sort. Liken makes other objects more like the likened object at the risk of the likened object drastically changing. Identifying will vaguely describe and object's tendencies (strongly organic, weakly artificial, moderately abstract). Different items will have difference tolerances which may disallow certain functions on them.
-
-
-
     // Sets name and determines main trait of object
     typeCalibrate(index);
     // Sets object's tolerances
     toleranceCalc(index);
 }
+
+
+/////////////////////////////// END OBJECT CREATION FUNCTIONS //////////////////////////////
+
+
+/////////////////////////////// START OBJECT MODIFICATION FUNCTIONS //////////////////////////
+
+// Transmutes object, making its stats move by a random amount
+void transmute(int index)
+{
+  // Checks against transmute chance, returns if failed
+  int transmuteCheck = rand()%100;
+  if(transmuteCheck>=objectArray[index].transmuteTolerant)
+  {
+    printf("Transmutation failed.\n");
+    return;
+  }
+
+  // Changes object's organic stat by a number between -3 and 4
+  objectArray[index].organic += rand()%8-3;
+  if(objectArray[index].organic > 7)
+  {
+    objectArray[index].organic = 7;
+  } 
+  if(objectArray[index].organic < 0)
+  {
+    objectArray[index].organic = 0;
+  }
+
+  // Changes object's artificial stat by a number between -3 and 4
+  objectArray[index].artificial += rand()%8-3;
+  if(objectArray[index].artificial > 7)
+  {
+    objectArray[index].artificial = 7;
+  } 
+  if(objectArray[index].artificial < 0)
+  {
+    objectArray[index].artificial = 0;
+  }
+
+  // Changes object's abstract stat by a number between -3 and 4
+  objectArray[index].abstract += rand()%8-4;
+  if(objectArray[index].abstract > 7)
+  {
+    objectArray[index].abstract = 7;
+  } 
+  if(objectArray[index].abstract < 0)
+  {
+    objectArray[index].abstract = 0;
+  }
+
+  // Sets object's other stats according to its new traits
+  typeCalibrate(index);
+  toleranceCalc(index);
+  
+}
+
+// Accessory function to inspect, evaluates traits and categorizes them by their value
+int traitCategorize(int trait)
+{
+  if(trait < 3)
+  {
+    return 0;
+  }
+  if(trait < 5)
+  {
+    return 1;
+  }
+  if(trait < 7)
+  {
+    return 2;
+  }
+  return 3;
+}
+
+// Identifies object, revealing its information to the user
+void inspect(int index)
+{
+  // Checks against inspect chance, returns if failed
+  int transmuteCheck = rand()%100;
+  if(transmuteCheck>=objectArray[index].inspectTolerant)
+  {
+    printf("Identification failed.\n");
+    return;
+  }
+
+  // Array of titles for different intensities of each trait
+  char intensityArray[4][10] = {"barely", "somewhat", "strongly", "intensely"};  
+
+  // Indexes of intensityArray corresponding to the object's trait
+  int organicIndex = traitCategorize(objectArray[index].organic);
+  int artificialIndex = traitCategorize(objectArray[index].artificial);
+  int abstractIndex = traitCategorize(objectArray[index].abstract);
+
+  // Prints identifying information
+  printf("The %s is\n%s organic,\n%s artificial, and\n%s abstract", objectArray[index].name, intensityArray[organicIndex], intensityArray[artificialIndex], intensityArray[abstractIndex]);
+  
+}
+
+/////////////////////////////// END OBJECT MODIFICATION FUNCTIONS //////////////////////////
+
+
 
 // Main function
 int main()
