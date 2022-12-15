@@ -141,9 +141,9 @@ void transmute(int index)
 
   // Changes object's organic stat by a number between -3 and 4
   objectArray[index].organic += rand()%8-3;
-  if(objectArray[index].organic > 7)
+  if(objectArray[index].organic > 6)
   {
-    objectArray[index].organic = 7;
+    objectArray[index].organic = 6;
   } 
   if(objectArray[index].organic < 0)
   {
@@ -152,9 +152,9 @@ void transmute(int index)
 
   // Changes object's artificial stat by a number between -3 and 4
   objectArray[index].artificial += rand()%8-3;
-  if(objectArray[index].artificial > 7)
+  if(objectArray[index].artificial > 6)
   {
-    objectArray[index].artificial = 7;
+    objectArray[index].artificial = 6;
   } 
   if(objectArray[index].artificial < 0)
   {
@@ -163,9 +163,9 @@ void transmute(int index)
 
   // Changes object's abstract stat by a number between -3 and 4
   objectArray[index].abstract += rand()%8-4;
-  if(objectArray[index].abstract > 7)
+  if(objectArray[index].abstract > 6)
   {
-    objectArray[index].abstract = 7;
+    objectArray[index].abstract = 6;
   } 
   if(objectArray[index].abstract < 0)
   {
@@ -181,15 +181,15 @@ void transmute(int index)
 // Accessory function to inspect, evaluates traits and categorizes them by their value
 int traitCategorize(int trait)
 {
-  if(trait < 3)
+  if(trait < 2)
   {
     return 0;
   }
-  if(trait < 5)
+  if(trait < 4)
   {
     return 1;
   }
-  if(trait < 7)
+  if(trait < 6)
   {
     return 2;
   }
@@ -200,8 +200,8 @@ int traitCategorize(int trait)
 void inspect(int index)
 {
   // Checks against inspect chance, returns if failed
-  int transmuteCheck = rand()%100;
-  if(transmuteCheck>=objectArray[index].inspectTolerant)
+  int inspectCheck = rand()%100;
+  if(inspectCheck>=objectArray[index].inspectTolerant)
   {
     printf("Identification failed.\n");
     return;
@@ -218,6 +218,51 @@ void inspect(int index)
   // Prints identifying information
   printf("The %s is\n%s organic,\n%s artificial, and\n%s abstract", objectArray[index].name, intensityArray[organicIndex], intensityArray[artificialIndex], intensityArray[abstractIndex]);
   
+}
+
+// Accessory function for manipulate
+int traitLimit(int trait)
+{
+  // Ensures that a value added to a trait does not make it negative or higher than 7
+  if(trait > 6)
+  {
+    return 6;
+  }
+  if(trait < 0)
+  {
+    return 0;
+  }
+  return trait;
+}
+
+// Manipulates an object, changing one of its traits
+void manipulate (int index, int trait, int positive)
+{
+  // Checks against manipulate chance, if failed, return
+  int manipulateCheck = rand()%100;
+  if(manipulateCheck>=objectArray[index].inspectTolerant)
+  {
+    printf("Manipulation failed.\n");
+    return;
+  }
+
+  // Makes modifier negative if the player chose to decrease the chosen value
+  int upDown = 1;
+  if(!positive)
+  {
+    upDown -= 2;
+  }
+  // Declares modifier and inverts it if desired
+  int modifier = rand()%4 * upDown;
+
+  // Changes the chosen value of the chosen object
+  switch(trait)
+    {
+      case 0: objectArray[index].organic = traitLimit(objectArray[index].organic + modifier);
+      case 1: objectArray[index].artificial = traitLimit(objectArray[index].artificial + modifier);
+      case 2: objectArray[index].abstract = traitLimit(objectArray[index].abstract + modifier);
+        
+    }
 }
 
 /////////////////////////////// END OBJECT MODIFICATION FUNCTIONS //////////////////////////
