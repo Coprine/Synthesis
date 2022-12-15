@@ -267,6 +267,86 @@ void manipulate (int index, int trait, int positive)
 
 /////////////////////////////// END OBJECT MODIFICATION FUNCTIONS //////////////////////////
 
+/////////////////////////////// START INPUT RESOLUTION FUNCTIONS ///////////////////////////
+
+void resolveInput(char input1[12], char input2[12], char input3[12])
+{
+  if(strcmp(input1, "amogus") == 0 && strcmp(input2, "sus") && strcmp(input3, "impostor"))
+  {
+    printf("Wow, it worked");
+  }
+}
+
+// Gets input from the console
+void getInput()
+{
+  // List of buffers for input and the three args that resolveInput takes
+  char input[36];
+  char inStr1[36] = " ";
+  char inStr2[36] = " ";
+  char inStr3[36] = " ";
+
+  // Core scanf function which maps to input
+  scanf("%s", input);
+
+  // Iterator
+  int i = 0;
+  // Sets to false when buffer is overflowed to prevent crashing
+  int isValid = 1;
+  
+  // Separates first word from input
+  while(input[i] != ' ' && input[i] != '\0')
+    {
+      // Checks if buffer will overflow, if so, error is thrown and user may retry
+      if(i>11)
+      {
+        printf("Command Invalid\n");
+        isValid--;
+        break;
+      }
+      // Maps individual char to appropriate string and iterates
+      strcpy(&inStr1[i],&input[i]);
+      i++;
+    }
+  // Extra iteration to skip spaces between words
+  i++;
+
+  // Separates second word from input
+  while(input[i] != ' ' && input[i] != '\0' && isValid)
+    {
+      // Checks if buffer will overflow, if so, error is thrown and user may retry
+      if(i>23)
+      {
+        printf("Command Invalid\n");
+        isValid--;
+        break;
+      }
+      // Maps individual char to appropriate string and iterates
+      strcpy(&inStr2[i%12],&input[i]);
+      i++;
+    }
+  // Extra iteration to skip spaces between words
+  i++;
+
+  // Separates third word from input
+  while(input[i] != ' ' && input[i] != '\0' && isValid)
+    {
+      // Checks if buffer will overflow, if so, error is thrown and user may retry
+      if(i>35)
+      {
+        printf("Command Invalid\n");
+        break;
+      }
+      // Maps individual char to appropriate string and iterates
+      strcpy(&inStr3[i%24],&input[i]);
+      i++;
+    }
+
+  isValid ? resolveInput(inStr1, inStr2, inStr3) : getInput();
+}
+
+
+/////////////////////////////// END INPUT RESOLUTION FUNCTIONS /////////////////////////////
 
 
 // Main function
@@ -277,18 +357,19 @@ int main()
 
     while(1)
     {
-        // Populate the main array with functional dream objects
-        for(int i = 0; i<5; i++)
-        {
-            // Calls function to construct relevant DreamObj
-            createObject(i);
-            // DEBUG TEXT
-            printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\nTransmute Tolerance: %d%%\nInspect Tolerance: %d%%\nSeed Tolerance: %d%%\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract, objectArray[i].transmuteTolerant, objectArray[i].inspectTolerant, objectArray[i].seedTolerant);
-            // END DEBUG TEXT
-        }
+      // Populate the main array with functional dream objects
+      for(int i = 0; i<5; i++)
+      {
+        // Calls function to construct relevant DreamObj
+        createObject(i);
+        // DEBUG TEXT
+        printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\nTransmute Tolerance: %d%%\nInspect Tolerance: %d%%\nSeed Tolerance: %d%%\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract, objectArray[i].transmuteTolerant, objectArray[i].inspectTolerant, objectArray[i].seedTolerant);
+        // END DEBUG TEXT
+      }
 
-        // Awaits user input, but only once. Will need replaced but works for debugging
-        scanf("among us");
+      getInput();
+      break;
+      
     }
 
 
