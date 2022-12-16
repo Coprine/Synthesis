@@ -269,22 +269,25 @@ void manipulate (int index, int trait, int positive)
 
 /////////////////////////////// START INPUT RESOLUTION FUNCTIONS ///////////////////////////
 
-void resolveInput(char input1[12], char input2[12], char input3[12])
+char toLower(char name)
 {
-  if(strcmp(input1, "amogus") == 0 && strcmp(input2, "sus") && strcmp(input3, "impostor"))
+   if (name >= 97 && name <= 122) 
   {
-    printf("Wow, it worked");
+    name -= 32;
   }
+  return name;
 }
 
 // Gets input from the console
+char inStr[4][12]; //I know this is bad practice but the alernative was worse
 void getInput()
 {
   // List of buffers for input and the three args that resolveInput takes
-  char input[36];
-  char inStr1[36] = " ";
-  char inStr2[36] = " ";
-  char inStr3[36] = " ";
+  char input[48];
+  char inStr1[12] = " ";
+  char inStr2[12] = " ";
+  char inStr3[12] = " ";
+  char inStr4[12] = " ";
 
   // Core scanf function which maps to input
   scanf("%s", input);
@@ -305,7 +308,7 @@ void getInput()
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr1[i],&input[i]);
+      strcpy(&inStr[0][i],&input[i]);
       i++;
     }
   // Extra iteration to skip spaces between words
@@ -322,7 +325,7 @@ void getInput()
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr2[i%12],&input[i]);
+      strcpy(&inStr[1][i%12],&input[i]);
       i++;
     }
   // Extra iteration to skip spaces between words
@@ -335,15 +338,117 @@ void getInput()
       if(i>35)
       {
         printf("Command Invalid\n");
+        isValid--;
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr3[i%24],&input[i]);
+      strcpy(&inStr[2][i%24],&input[i]);
+      i++;
+    }
+  // Extra iteration to skip spaces between words
+  i++;
+
+  // Separates fourth word from input
+  while(input[i] != ' ' && input[i] != '\0' && isValid)
+    {
+      // Checks if buffer will overflow, if so, error is thrown and user may retry
+      if(i>47)
+      {
+        printf("Command Invalid\n");
+        break;
+      }
+      // Maps individual char to appropriate string and iterates
+      strcpy(&inStr[3][i%36],&input[i]);
       i++;
     }
 
-  isValid ? resolveInput(inStr1, inStr2, inStr3) : getInput();
+  if(!isValid)
+  {
+    getInput();
+  }
 }
+
+
+void resolveInput(char input1[12], char input2[12], char input3[12], char input4[12])
+{
+  // for(int i = 0; i<12; i++)
+  //   {
+  //     input1[i] = toLower(input1[i]);
+  //     input2[i] = toLower(input2[i]);
+  //     input3[i] = toLower(input3[i]);
+  //     input4[i] = toLower(input4[i]);
+  //   }
+  if(strcmp(input1, "transmute") == 0)
+  {
+    if(atoi(input2) > 4 || atoi(input2) < 0)
+    {
+      printf("Object does not exist\n");
+      getInput();
+      return;
+    }
+    transmute(atoi(input2));
+    return;
+  }
+  if(strcmp(input1, "identify") == 0)
+  {
+    if(atoi(input2) > 4 || atoi(input2) < 0)
+    {
+      printf("Object does not exist\n");
+      getInput();
+      return;
+    }
+    inspect((int)input2[0]);
+    return;
+  }
+  if(strcmp(input1, "manipulate") == 0)
+  {
+    if(atoi(input2) > 4 || atoi(input2) < 0)
+    {
+      printf("Object does not exist\n");
+      getInput();
+      return;
+    }
+
+    int convertedTrait = 3;
+    if(strcmp(input3, "organic") == 0)
+    {
+      convertedTrait = 0;
+    }
+    else if(strcmp(input3, "artificial") == 0)
+    {
+      convertedTrait = 1;
+    }
+    else if(strcmp(input3, "abstract") == 0)
+    {
+      convertedTrait = 2;
+    } else {
+      printf("Valid traits include \"organic\", \"artficial\", and \"abstract\".\n");
+      getInput();
+      return;
+    }
+
+    if(strcmp(input4, "up") == 0)
+    {
+      manipulate(atoi(input2),convertedTrait,1);
+      return;
+    }
+    if(strcmp(input4, "down") == 0)
+    {
+      manipulate(atoi(input2),convertedTrait,1);
+      return;
+    }
+    printf("Action manipulate only accepts \"up\" or \"down\" as 4th argument.\n");
+    getInput();
+    return;
+
+    
+  }
+  printf("Invalid Command.\n");
+  getInput();
+  return;
+}
+
+
 
 
 /////////////////////////////// END INPUT RESOLUTION FUNCTIONS /////////////////////////////
@@ -368,6 +473,7 @@ int main()
       }
 
       getInput();
+      resolveInput(inStr[0],inStr[1],inStr[2],inStr[3]);
       break;
       
     }
