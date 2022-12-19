@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 struct DreamObj
 {
@@ -13,11 +14,25 @@ struct DreamObj
     int abstract;
     int transmuteTolerant;
     int inspectTolerant;
-    int seedTolerant;
+    int manipulateTolerant;
+};
+
+
+struct World
+{
+  int transmuteMod;
+  int inspectMod;
+  int manipulateMod;
+
+  int organicMod;
+  int artificialMod;
+  int abstractMod;
 };
 
     // Array containing the objects for each stage
     struct DreamObj objectArray[5];
+
+struct World world[3][3];
 
 
 
@@ -76,7 +91,7 @@ void toleranceCalc(int index)
 
   // Sets variable to be transmute tolerance
   // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in organic, minus 8.3 percent for each point the object has in artificial. It is then modified by the world's transmute tolerance modifier.
-  double transmuteTolerantMod = ((rand()%50)*0.01+((double)organic/6)-((double)artificial/12))*globalTTolerantMod;
+  double transmuteTolerantMod = ((rand()%50)*0.01+((double)abstract/6)-((double)artificial/12))*globalTTolerantMod;
   if(transmuteTolerantMod<0)
   {transmuteTolerantMod = 0;}
   if(transmuteTolerantMod>1)
@@ -85,21 +100,21 @@ void toleranceCalc(int index)
 
   // Sets variable to be inspect tolerance
   // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in artificial, minus 8.3 percent for each point the object has in abstract. It is then modified by the world's inspect tolerance modifier.
-  double inspectTolerantMod = ((rand()%50)*0.01+((double)artificial/6)-((double)abstract/12))*globalITolerantMod;
+  double inspectTolerantMod = ((rand()%50)*0.01+((double)artificial/6)-((double)organic/12))*globalITolerantMod;
   if(inspectTolerantMod<0)
   {inspectTolerantMod = 0;}
   if(inspectTolerantMod>1)
   {inspectTolerantMod = 1;}
   objectArray[index].inspectTolerant = floor(inspectTolerantMod * 100);
 
-  // Sets variable to be seed tolerance
-  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in abstract, minus 8.3 percent for each point the object has in organic. It is then modified by the world's seed tolerance modifier.
-  double seedTolerantMod = ((rand()%50)*0.01+((double)abstract/6)-((double)organic/12))*globalSTolerantMod;
-  if(seedTolerantMod<0)
-  {seedTolerantMod = 0;}
-  if(seedTolerantMod>1)
-  {seedTolerantMod = 1;}
-  objectArray[index].seedTolerant = floor(seedTolerantMod * 100);
+  // Sets variable to be manipulate tolerance
+  // Formula is a percent equal to a random number 0 through 50 plus 16.66 percent for every point the object has in abstract, minus 8.3 percent for each point the object has in organic. It is then modified by the world's manipulate tolerance modifier.
+  double manipulateTolerantMod = ((rand()%50)*0.01+((double)organic/6)-((double)abstract/12))*globalSTolerantMod;
+  if(manipulateTolerantMod<0)
+  {manipulateTolerantMod = 0;}
+  if(manipulateTolerantMod>1)
+  {manipulateTolerantMod = 1;}
+  objectArray[index].manipulateTolerant = floor(manipulateTolerantMod * 100);
 }
 
 
@@ -122,6 +137,56 @@ void createObject(int index)
     toleranceCalc(index);
 }
 
+void setWorldTraits(int ind1, int ind2, int mods[3])
+{
+  world[ind1][ind2].transmuteMod = mods[0];
+  world[ind1][ind2].inspectMod = mods[1];
+  world[ind1][ind2].manipulateMod = mods[2];
+
+  int traitModMod = (rand()%3);
+
+  // I hate myself for writing the following code
+  if(!traitModMod)
+  {
+   world[ind1][ind2].organicMod++; 
+   return;
+  }
+  if(traitModMod-1)
+  {
+    world[ind1][ind2].artificialMod++;
+    return;
+  }
+  if(traitModMod)
+  {
+    world[ind1][ind2].abstractMod++;
+  }
+}
+
+
+void populateWorld()
+{
+
+  int traitModTemplates[3][3] = 
+  {
+    // Organic
+    {4,3,7},
+    // artificial
+    {3,7,4},
+    // Abstract
+    {7,4,3}
+  };
+
+  int trait = rand()%3;
+  
+  for(int i = 0; i<3; i++)
+    {
+      for(int j = 0; j<3; i++)
+        {
+          setWorldTraits(i,j,traitModTemplates[trait]);
+          trait = rand()%3;
+        }
+    }
+}
 
 /////////////////////////////// END OBJECT CREATION FUNCTIONS //////////////////////////////
 
@@ -196,6 +261,7 @@ int traitCategorize(int trait)
   return 3;
 }
 
+
 // Identifies object, revealing its information to the user
 void inspect(int index)
 {
@@ -215,7 +281,7 @@ void inspect(int index)
   int artificialIndex = traitCategorize(objectArray[index].artificial);
   int abstractIndex = traitCategorize(objectArray[index].abstract);
 
-  // Prints identifying information
+  // Prints inspecting information
   printf("The %s is\n%s organic,\n%s artificial, and\n%s abstract", objectArray[index].name, intensityArray[organicIndex], intensityArray[artificialIndex], intensityArray[abstractIndex]);
   
 }
@@ -234,6 +300,7 @@ int traitLimit(int trait)
   }
   return trait;
 }
+
 
 // Manipulates an object, changing one of its traits
 void manipulate (int index, int trait, int positive)
@@ -265,18 +332,19 @@ void manipulate (int index, int trait, int positive)
     }
 }
 
+
+void wander(char dir[5])
+{
+
+  
+  
+}
+
+
 /////////////////////////////// END OBJECT MODIFICATION FUNCTIONS //////////////////////////
 
 /////////////////////////////// START INPUT RESOLUTION FUNCTIONS ///////////////////////////
 
-char toLower(char name)
-{
-   if (name >= 97 && name <= 122) 
-  {
-    name -= 32;
-  }
-  return name;
-}
 
 // Gets input from the console
 char inStr[4][12]; //I know this is bad practice but the alernative was worse
@@ -284,21 +352,19 @@ void getInput()
 {
   // List of buffers for input and the three args that resolveInput takes
   char input[48];
-  char inStr1[12] = " ";
-  char inStr2[12] = " ";
-  char inStr3[12] = " ";
-  char inStr4[12] = " ";
 
   // Core scanf function which maps to input
-  scanf("%s", input);
+  scanf("%[^\n]s", input);
 
   // Iterator
   int i = 0;
+  // Iterator buffer
+  int j = 0;
   // Sets to false when buffer is overflowed to prevent crashing
   int isValid = 1;
   
   // Separates first word from input
-  while(input[i] != ' ' && input[i] != '\0')
+  while(input[i] != (char)32 && input[i] != '\0')
     {
       // Checks if buffer will overflow, if so, error is thrown and user may retry
       if(i>11)
@@ -308,14 +374,16 @@ void getInput()
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr[0][i],&input[i]);
+      inStr[0][j] = input[i];
       i++;
+      j++;
     }
   // Extra iteration to skip spaces between words
   i++;
+  j = 0;
 
   // Separates second word from input
-  while(input[i] != ' ' && input[i] != '\0' && isValid)
+  while(input[i] != (char)32 && input[i] != '\0' && isValid)
     {
       // Checks if buffer will overflow, if so, error is thrown and user may retry
       if(i>23)
@@ -325,31 +393,35 @@ void getInput()
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr[1][i%12],&input[i]);
+      inStr[1][j] = input[i];
       i++;
+      j++;
     }
   // Extra iteration to skip spaces between words
   i++;
+  j = 0;
 
   // Separates third word from input
-  while(input[i] != ' ' && input[i] != '\0' && isValid)
+  while(input[i] != (char)32 && input[i] != '\0' && isValid)
     {
       // Checks if buffer will overflow, if so, error is thrown and user may retry
       if(i>35)
       {
-        printf("Command Invalid\n");
+        printf("Command Invalid %c\n", input[i]);
         isValid--;
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr[2][i%24],&input[i]);
+      inStr[2][j] = input[i];
       i++;
+      j++;
     }
   // Extra iteration to skip spaces between words
   i++;
+  j = 0;
 
   // Separates fourth word from input
-  while(input[i] != ' ' && input[i] != '\0' && isValid)
+  while(input[i] != (char)32 && input[i] != '\0' && isValid)
     {
       // Checks if buffer will overflow, if so, error is thrown and user may retry
       if(i>47)
@@ -358,10 +430,12 @@ void getInput()
         break;
       }
       // Maps individual char to appropriate string and iterates
-      strcpy(&inStr[3][i%36],&input[i]);
+      inStr[3][j] = input[i];
       i++;
+      j++;
     }
 
+  // Recurses if input is invalid
   if(!isValid)
   {
     getInput();
@@ -369,18 +443,25 @@ void getInput()
 }
 
 
+// Interprets input after it is sent
 void resolveInput(char input1[12], char input2[12], char input3[12], char input4[12])
 {
-  // for(int i = 0; i<12; i++)
-  //   {
-  //     input1[i] = toLower(input1[i]);
-  //     input2[i] = toLower(input2[i]);
-  //     input3[i] = toLower(input3[i]);
-  //     input4[i] = toLower(input4[i]);
-  //   }
+  // Makes all input lowercase so that it is more readable to the system
+  for(int i = 0; i<12; i++)
+    {
+      input1[i] = tolower(input1[i]);
+      input2[i] = tolower(input2[i]);
+      input3[i] = tolower(input3[i]);
+      input4[i] = tolower(input4[i]);
+    }
+
+  // If the second input required is a number, it will se this
+  int inputNum = atoi(input2);
+
+  // Calls transmute function if the input asks for it
   if(strcmp(input1, "transmute") == 0)
   {
-    if(atoi(input2) > 4 || atoi(input2) < 0)
+    if(inputNum > 4 || inputNum < 0)
     {
       printf("Object does not exist\n");
       getInput();
@@ -389,20 +470,24 @@ void resolveInput(char input1[12], char input2[12], char input3[12], char input4
     transmute(atoi(input2));
     return;
   }
-  if(strcmp(input1, "identify") == 0)
+
+  // Calls inspect function if the input asks for it
+  if(strcmp(input1, "inspect") == 0)
   {
-    if(atoi(input2) > 4 || atoi(input2) < 0)
+    if(inputNum > 4 || inputNum < 0)
     {
       printf("Object does not exist\n");
       getInput();
       return;
     }
-    inspect((int)input2[0]);
+    inspect(inputNum);
     return;
   }
+
+  // Calls manipulate function if the input asks for it
   if(strcmp(input1, "manipulate") == 0)
   {
-    if(atoi(input2) > 4 || atoi(input2) < 0)
+    if(inputNum > 4 || inputNum < 0)
     {
       printf("Object does not exist\n");
       getInput();
@@ -423,6 +508,7 @@ void resolveInput(char input1[12], char input2[12], char input3[12], char input4
       convertedTrait = 2;
     } else {
       printf("Valid traits include \"organic\", \"artficial\", and \"abstract\".\n");
+      printf("you said, %s, silly!\n", input3);
       getInput();
       return;
     }
@@ -468,7 +554,7 @@ int main()
         // Calls function to construct relevant DreamObj
         createObject(i);
         // DEBUG TEXT
-        printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\nTransmute Tolerance: %d%%\nInspect Tolerance: %d%%\nSeed Tolerance: %d%%\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract, objectArray[i].transmuteTolerant, objectArray[i].inspectTolerant, objectArray[i].seedTolerant);
+        printf("Object %d's type is %s.\n It is a %s\n Org: %d\n Art: %d\n Abs: %d\nTransmute Tolerance: %d%%\nInspect Tolerance: %d%%\nmanipulate Tolerance: %d%%\n", i, &objectArray[i].mainTrait, objectArray[i].name, objectArray[i].organic, objectArray[i].artificial, objectArray[i].abstract, objectArray[i].transmuteTolerant, objectArray[i].inspectTolerant, objectArray[i].manipulateTolerant);
         // END DEBUG TEXT
       }
 
